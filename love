@@ -1,0 +1,408 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { Heart, Stars, Infinity, Music, Waves, Sun, Calendar, Sparkles, Anchor, Smile, Gift, Lock, BookOpen, X } from 'lucide-react';
+
+// --- DATA ---
+// Organizando as mensagens fornecidas pelo usuário
+const timelineData = [
+  // AGOSTO
+  { id: 1, date: '03/08/2025', text: "Somente o amor irá salvar.", mood: 'hope', month: 'agosto' },
+  { id: 2, date: '03/08/2025', text: "Te beijar de olhos fechados me alucina um tanto. É como ir de encontro ao oceano.", mood: 'ocean', month: 'agosto' },
+  { id: 3, date: '03/08/2025', text: "A vida tem coisas bonitas ❤️.", mood: 'joy', month: 'agosto' },
+  { id: 4, date: '03/08/2025', text: "Torcendo pra te encontrar do outro lado, linda.", mood: 'hope', month: 'agosto' },
+  { id: 5, date: '04/08/2025', text: "Linda, princesa demais.", mood: 'royal', month: 'agosto' },
+  { id: 6, date: '04/08/2025', text: "Vai ser tão bom quando a gente puder ficar abraçado, eu te fazendo carin, sorrindo sem parar 🥴.", mood: 'touch', month: 'agosto' },
+  { id: 7, date: '04/08/2025', text: "Você é um anjo, linda.", mood: 'angel', month: 'agosto' },
+  { id: 8, date: '05/08/2025', text: "Eu quero que nunca acabe essa sintonia ❤️.", mood: 'music', month: 'agosto' },
+  { id: 9, date: '05/08/2025', text: "Como se tua presença fosse uma parte perdida da minha completude.", mood: 'soul', month: 'agosto' },
+  { id: 10, date: '05/08/2025', text: "Vou poder te abraçar e sorrir por horas. Eu zerei a vida 😵❤️.", mood: 'winner', month: 'agosto' },
+  { id: 11, date: '06/08/2025', text: "Você e eu, é simples assim. Linda, gostei.", mood: 'simple', month: 'agosto' },
+  { id: 12, date: '06/08/2025', text: "Me sinto o ganhador da mega sena... mesmo sabendo que tudo posso, só um tudo eu quero 🥴.", mood: 'winner', month: 'agosto' },
+  { id: 13, date: '07/08/2025', text: "Linda 🫣🤍. Queria te dar um beijo agora.", mood: 'kiss', month: 'agosto' },
+  { id: 14, date: '07/08/2025', text: "Quero conhecer cada detalhe seu.", mood: 'curious', month: 'agosto' },
+  { id: 15, date: '08/08/2025', text: "Bom dia, minha princesa.", mood: 'royal', month: 'agosto' },
+  { id: 16, date: '09/08/2025', text: "Bom dia, meu anjo ❤️.", mood: 'angel', month: 'agosto' },
+  { id: 17, date: '09/08/2025', text: "Você desperta em mim uma força capaz de tudo.", mood: 'power', month: 'agosto' },
+  { id: 18, date: '10/08/2025', text: "Eu gosto de estar contigo... não tem como dar errado ❤️.", mood: 'certainty', month: 'agosto' },
+  { id: 19, date: '11/08/2025', text: "Meu anjo ❤️. Linda, saudades 🍀🌹.", mood: 'miss', month: 'agosto' },
+  { id: 20, date: '12/08/2025', text: "Linda, inteligente ❤️. Te gosto, minha ruivinha.", mood: 'admire', month: 'agosto' },
+  { id: 21, date: '13/08/2025', text: "Mi amorcito 🫣.", mood: 'cute', month: 'agosto' },
+  { id: 22, date: '14/08/2025', text: "Incrível como você me faz sorrir ❤️.", mood: 'joy', month: 'agosto' },
+  { id: 23, date: '15/08/2025', text: "Também te gosto muito ❤️. Meu amorzinho.", mood: 'love', month: 'agosto' },
+
+  // SETEMBRO
+  { id: 24, date: '05/09/2025', text: "Linda, minha... ❤️.", mood: 'possession', month: 'setembro' },
+  { id: 25, date: '10/09/2025', text: "Gosto de você, meu amorzinho.", mood: 'cute', month: 'setembro' },
+  { id: 26, date: '11/09/2025', text: "Eu te amo... queria você nos meus braços ❤️.", mood: 'hug', month: 'setembro' },
+  { id: 27, date: '11/09/2025', text: "Você é meu amorzinho... prometo valorizar+.", mood: 'promise', month: 'setembro' },
+  { id: 28, date: '12/09/2025', text: "Te amo... só por te ver ❤️.", mood: 'sight', month: 'setembro' },
+
+  // OUTUBRO e NOVEMBRO (Agrupados)
+  { id: 29, date: '09/10/2025', text: "Eu te gosto, docinho... sinto falta dos nossos finais de semana 😔.", mood: 'miss', month: 'out_nov' },
+  { id: 30, date: '09/10/2025', text: "Eu te quero, te gosto... tu é minha gata.", mood: 'desire', month: 'out_nov' },
+  { id: 31, date: '14/10/2025', text: "Te amo, amor da minha vida 😍.", mood: 'deep_love', month: 'out_nov' },
+  { id: 32, date: '15/10/2025', text: "Limda com M de Minha.", mood: 'playful', month: 'out_nov' },
+  { id: 33, date: '20/10/2025', text: "Eu te amo, queria tá te fazendo carinho e te dando beijo ❤️.", mood: 'touch', month: 'out_nov' },
+  { id: 34, date: '23/10/2025', text: "Te amo... você é meu amorzinho.", mood: 'cute', month: 'out_nov' },
+  { id: 35, date: '09/11/2025', text: "Bom dia meu amorzinho, te amo... tu és minha melhor escolha.", mood: 'choice', month: 'out_nov' },
+  { id: 36, date: '09/11/2025', text: "Você me conquistou... cê vai ter só o melhor de mim a partir de agora.", mood: 'promise', month: 'out_nov' },
+  { id: 37, date: '11/11/2025', text: "Eu te amo... faria qualquer coisa por nós dois ❤️.", mood: 'devotion', month: 'out_nov' },
+];
+
+// --- DADOS DA HISTÓRIA ---
+const storyData = [
+  {
+    id: 1,
+    title: "O Encontro de Almas",
+    text: "Foi como se o universo conspirasse para o nosso momento. Na beira do mar, com o sol se pondo, nossos caminhos se cruzaram e a sintonia foi instantânea. A certeza de ter encontrado alguém especial floresceu ali, entre sorrisos e olhares que diziam mais que mil palavras. Você despertou em mim uma força capaz de tudo.",
+    image: "https://i.ibb.co/0fXQ4j2/unnamed-1.jpg",
+    position: "top",
+  },
+  {
+    id: 2,
+    title: "Construindo Nosso Refúgio",
+    text: "Cada tijolo, cada sonho compartilhado. Juntos, começamos a desenhar os contornos de um futuro em comum, um lugar onde nosso amor pudesse morar e crescer. É simples assim: você e eu, construindo um lar, não apenas de paredes, mas de memórias, carinho e a promessa de dias felizes. Gosto de estar contigo, não tem como dar errado.",
+    image: "https://i.ibb.co/8j9z3Wj/unnamed-2.jpg",
+    position: "middle",
+  },
+  {
+    id: 3,
+    title: "A Promessa Eterna",
+    text: "Um símbolo de um sentimento que não tem fim. Com a beleza e a delicadeza de uma flor e a solidez de um compromisso, reafirmo que você é a minha melhor escolha. Prometo valorizar cada instante, cada sorriso seu. Faria qualquer coisa por nós dois. Te amo, meu amorzinho, para todo o sempre.",
+    image: "https://i.ibb.co/Jv6x1rQ/unnamed-3.jpg",
+    position: "bottom",
+  }
+];
+
+
+// --- COMPONENTES AUXILIARES ---
+
+// Função para obter ícone e cor baseada no "mood" da mensagem
+const getMoodConfig = (mood) => {
+  switch (mood) {
+    case 'ocean': return { icon: Waves, color: 'text-blue-400', bg: 'bg-blue-500/10', border: 'border-blue-500/30' };
+    case 'angel': return { icon: Sparkles, color: 'text-yellow-200', bg: 'bg-yellow-500/10', border: 'border-yellow-500/30' };
+    case 'music': return { icon: Music, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/30' };
+    case 'winner': return { icon: Gift, color: 'text-emerald-400', bg: 'bg-emerald-500/10', border: 'border-emerald-500/30' };
+    case 'deep_love': return { icon: Infinity, color: 'text-red-500', bg: 'bg-red-500/20', border: 'border-red-500/40' };
+    case 'royal': return { icon: Sun, color: 'text-amber-300', bg: 'bg-amber-500/10', border: 'border-amber-500/30' };
+    case 'promise': return { icon: Anchor, color: 'text-indigo-400', bg: 'bg-indigo-500/10', border: 'border-indigo-500/30' };
+    case 'choice': return { icon: Lock, color: 'text-pink-400', bg: 'bg-pink-500/10', border: 'border-pink-500/30' };
+    default: return { icon: Heart, color: 'text-rose-400', bg: 'bg-rose-500/10', border: 'border-rose-500/30' };
+  }
+};
+
+const AnimatedBackground = () => {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      <div className="absolute w-[500px] h-[500px] bg-rose-600/20 rounded-full blur-3xl -top-20 -left-20 animate-pulse mix-blend-screen" />
+      <div className="absolute w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-3xl bottom-0 right-0 animate-pulse mix-blend-screen delay-1000" />
+      {/* Estrelas geradas aleatoriamente */}
+      {[...Array(20)].map((_, i) => (
+        <div
+          key={i}
+          className="absolute bg-white rounded-full opacity-40 animate-ping"
+          style={{
+            top: `${Math.random() * 100}%`,
+            left: `${Math.random() * 100}%`,
+            width: `${Math.random() * 3}px`,
+            height: `${Math.random() * 3}px`,
+            animationDuration: `${Math.random() * 5 + 3}s`,
+            animationDelay: `${Math.random() * 2}s`
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+const QuoteCard = ({ item, index }) => {
+  const config = getMoodConfig(item.mood);
+  const Icon = config.icon;
+
+  return (
+    <div 
+      className={`relative group mb-6 transform transition-all duration-500 hover:scale-[1.02] opacity-0 animate-fade-in-up`}
+      style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'forwards' }}
+    >
+      {/* Linha do tempo conectora */}
+      <div className="absolute left-[-24px] top-6 w-4 h-4 bg-rose-500 rounded-full border-4 border-slate-900 z-10 shadow-lg shadow-rose-500/50" />
+      
+      <div className={`
+        relative overflow-hidden rounded-2xl p-5 
+        backdrop-blur-xl bg-slate-900/60 
+        border ${config.border} shadow-lg
+      `}>
+        {/* Glow de fundo no card */}
+        <div className={`absolute -right-10 -top-10 w-32 h-32 ${config.bg} rounded-full blur-2xl transition-all group-hover:scale-150`} />
+
+        <div className="relative z-10">
+          <div className="flex justify-between items-start mb-2">
+            <span className="text-xs font-bold tracking-widest text-slate-400 uppercase flex items-center gap-2 bg-slate-800/50 px-2 py-1 rounded-full">
+              <Calendar size={12} />
+              {item.date}
+            </span>
+            <Icon size={18} className={`${config.color} drop-shadow-glow`} />
+          </div>
+          
+          <p className="text-lg md:text-xl text-slate-100 font-serif leading-relaxed italic">
+            "{item.text}"
+          </p>
+          
+          {item.mood === 'ocean' && (
+             <div className="mt-3 text-xs text-blue-300 flex items-center gap-1 opacity-70">
+               <Waves size={12} /> Profundo como o mar
+             </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Componente para cada seção da história
+const StorySection = ({ title, text, image, position, index }) => {
+  const isEven = index % 2 === 0;
+  
+  return (
+    <div className={`flex flex-col md:flex-row items-center gap-8 py-12 ${isEven ? 'md:flex-row-reverse' : ''}`}>
+      {/* Imagem com Efeito de Recorte */}
+      <div className="flex-1 relative group">
+        <div className="absolute -inset-2 bg-gradient-to-r from-rose-500 to-purple-600 rounded-3xl blur-xl opacity-30 group-hover:opacity-60 transition-opacity duration-500" />
+        <div className={`relative rounded-3xl overflow-hidden shadow-2xl border-2 border-white/10 transform transition-transform duration-700 group-hover:scale-[1.02] ${isEven ? 'rotate-1' : '-rotate-1'}`}>
+            <img src={image} alt={title} className="w-full h-64 md:h-80 object-cover" />
+            {/* Máscara para o efeito de divisão da imagem */}
+            {position === 'top' && <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-slate-950/80" />}
+            {position === 'middle' && <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-transparent to-slate-950/80" />}
+            {position === 'bottom' && <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-slate-950/80" />}
+        </div>
+      </div>
+
+      {/* Texto da História */}
+      <div className="flex-1 space-y-4 text-center md:text-left">
+        <h3 className="text-2xl md:text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-200 via-white to-rose-200">
+          {title}
+        </h3>
+        <p className="text-slate-300 text-lg leading-relaxed font-light">
+          {text}
+        </p>
+        <div className="flex justify-center md:justify-start">
+            <Heart className="text-rose-500 animate-pulse-slow" size={24} fill="currentColor" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState('agosto');
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showStory, setShowStory] = useState(false);
+  const contentRef = useRef(null);
+  const storyRef = useRef(null);
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if(contentRef.current) {
+        contentRef.current.scrollTop = 0;
+    }
+  }, [activeTab]);
+
+  // Efeito para rolar para o início da história quando aberta
+  useEffect(() => {
+    if (showStory && storyRef.current) {
+        storyRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [showStory]);
+
+
+  const filteredData = timelineData.filter(item => item.month === activeTab);
+
+  const tabs = [
+    { id: 'agosto', label: 'Agosto', sub: 'O Início' },
+    { id: 'setembro', label: 'Setembro', sub: 'Sintonia' },
+    { id: 'out_nov', label: 'Out/Nov', sub: 'Eternidade' },
+  ];
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-white font-sans selection:bg-rose-500 selection:text-white overflow-hidden relative">
+      <AnimatedBackground />
+
+      <div className="max-w-md mx-auto h-screen flex flex-col relative z-10 shadow-2xl bg-black/20 backdrop-blur-sm border-x border-white/5 transition-all duration-500 ease-in-out" style={{ maxWidth: showStory ? '800px' : '448px' }}>
+        
+        {/* HEADER / HERO SECTION */}
+        <header className="pt-8 pb-4 px-6 text-center relative">
+          <div className="w-24 h-24 mx-auto rounded-full p-1 bg-gradient-to-tr from-rose-500 via-purple-500 to-indigo-500 mb-4 shadow-xl shadow-rose-500/20 animate-pulse-slow relative z-20">
+             {/* IMAGEM DO USUÁRIO AQUI - Placeholder estilizado */}
+             <div className="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden relative">
+                <img 
+                    src="https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?q=80&w=250&auto=format&fit=crop" 
+                    alt="Capa Romântica"
+                    className="w-full h-full object-cover opacity-80 hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <Heart className="absolute bottom-4 text-white drop-shadow-md animate-bounce" size={20} fill="currentColor" />
+             </div>
+          </div>
+          
+          <h1 className={`text-3xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-rose-200 via-white to-rose-200 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+            Nossa História
+          </h1>
+          <p className="text-slate-400 text-sm mt-1 flex items-center justify-center gap-1 mb-4">
+            2025 <Infinity size={12} /> Infinito
+          </p>
+
+          {/* Botão para alternar entre Timeline e História Completa */}
+          {!showStory && (
+            <button
+                onClick={() => setShowStory(true)}
+                className="flex items-center gap-2 mx-auto bg-slate-800/60 hover:bg-slate-700/60 text-rose-200 px-4 py-2 rounded-full text-sm font-medium backdrop-blur-md transition-all duration-300 border border-rose-500/30 shadow-lg shadow-rose-500/10 group"
+            >
+                <BookOpen size={16} className="group-hover:scale-110 transition-transform" />
+                Ler Nossa História Completa
+            </button>
+          )}
+        </header>
+
+        {/* NAVIGATION TABS (Visível apenas na Timeline) */}
+        {!showStory && (
+            <nav className="px-4 mb-2 animate-fade-in">
+            <div className="flex bg-slate-900/80 p-1 rounded-2xl border border-white/10 backdrop-blur-md">
+                {tabs.map((tab) => (
+                <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`
+                    flex-1 py-3 px-2 rounded-xl text-sm font-medium transition-all duration-300 relative overflow-hidden group
+                    ${activeTab === tab.id ? 'text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}
+                    `}
+                >
+                    {activeTab === tab.id && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-rose-600 to-purple-600 rounded-xl opacity-100 transition-opacity" />
+                    )}
+                    <span className="relative z-10 flex flex-col items-center leading-tight">
+                    <span className="font-bold tracking-wide">{tab.label}</span>
+                    <span className={`text-[10px] uppercase tracking-widest mt-0.5 ${activeTab === tab.id ? 'text-rose-100' : 'text-slate-600'}`}>
+                        {tab.sub}
+                    </span>
+                    </span>
+                </button>
+                ))}
+            </div>
+            </nav>
+        )}
+        
+        {/* Botão de Fechar História */}
+        {showStory && (
+            <button 
+                onClick={() => setShowStory(false)}
+                className="absolute top-6 right-6 z-50 bg-slate-900/60 p-2 rounded-full text-slate-400 hover:text-white hover:bg-rose-500/20 transition-all duration-300 backdrop-blur-md border border-white/10"
+            >
+                <X size={20} />
+            </button>
+        )}
+
+
+        {/* CONTENT SCROLL AREA */}
+        <main ref={contentRef} className="flex-1 overflow-y-auto px-6 py-4 scroll-smooth custom-scrollbar relative">
+          
+          {/* CONTEÚDO DA TIMELINE */}
+          {!showStory && (
+            <>
+                {/* Linha vertical da timeline */}
+                <div className="absolute left-[22px] top-0 bottom-0 w-0.5 bg-gradient-to-b from-transparent via-rose-500/30 to-transparent pointer-events-none animate-fade-in" />
+
+                <div className="pl-6 pb-20 animate-fade-in">
+                    {filteredData.map((item, index) => (
+                    <QuoteCard key={`${activeTab}-${item.id}`} item={item} index={index} />
+                    ))}
+                    
+                    {/* Mensagem final da lista */}
+                    <div className="mt-12 text-center opacity-60 pb-8">
+                    <Smile className="mx-auto mb-2 text-rose-400" />
+                    <p className="text-xs text-slate-500">
+                        Cada palavra gravada no tempo.<br/>
+                        Para sempre.
+                    </p>
+                    </div>
+                </div>
+            </>
+          )}
+
+          {/* CONTEÚDO DA HISTÓRIA COMPLETA */}
+          {showStory && (
+            <div ref={storyRef} className="pb-20 animate-fade-in space-y-12 md:space-y-24 pt-4">
+                {storyData.map((section, index) => (
+                    <StorySection key={section.id} {...section} index={index} />
+                ))}
+                
+                {/* Final da História */}
+                 <div className="text-center py-12 relative">
+                    <div className="absolute inset-0 flex items-center justify-center opacity-20">
+                        <Heart size={120} className="text-rose-500 animate-pulse-slow" />
+                    </div>
+                    <h3 className="text-3xl font-serif font-bold text-white relative z-10">
+                        ...e a nossa história continua.
+                    </h3>
+                    <p className="text-slate-400 mt-4 relative z-10">
+                        Escrita dia após dia, com cada gesto de amor.
+                    </p>
+                 </div>
+            </div>
+          )}
+
+        </main>
+
+        {/* Floating Action Button (Decorativo - Visível apenas na Timeline) */}
+        {!showStory && (
+            <div className="absolute bottom-6 right-6 animate-fade-in">
+                <button className="bg-rose-600 hover:bg-rose-500 text-white p-4 rounded-full shadow-lg shadow-rose-600/40 transition-all hover:scale-110 active:scale-95 group">
+                    <Heart className="group-hover:animate-ping absolute inset-0 m-auto opacity-50" size={24} fill="currentColor" />
+                    <Heart size={24} fill="currentColor" />
+                </button>
+            </div>
+        )}
+        
+        {/* Style Tag Fixed: Removed 'jsx' and 'global' attributes to prevent React warnings */}
+        <style>{`
+            @keyframes fade-in-up {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade-in-up {
+              animation: fade-in-up 0.6s ease-out forwards;
+            }
+            @keyframes fade-in {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            .animate-fade-in {
+              animation: fade-in 0.5s ease-out forwards;
+            }
+            .animate-pulse-slow {
+              animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            /* Custom Scrollbar */
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: rgba(0,0,0,0.1);
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: rgba(225, 29, 72, 0.3);
+              border-radius: 10px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: rgba(225, 29, 72, 0.6);
+            }
+            .drop-shadow-glow {
+                filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
+            }
+        `}</style>
+      </div>
+    </div>
+  );
+}
